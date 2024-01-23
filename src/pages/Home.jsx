@@ -9,9 +9,8 @@ function Home() {
 
     const [posts, setPosts] = useState([])
     const authStatus = useSelector(state => state.auth)
-    console.log(authStatus.userData.$id, 'auth');
     useEffect(() => {
-        appwriteService.getPosts(authStatus.userData.$id).then((posts) => {
+        appwriteService.getPosts().then((posts) => {
             if (posts) {
                 setPosts(posts.documents)
             }
