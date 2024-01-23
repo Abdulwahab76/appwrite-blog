@@ -80,8 +80,19 @@ export class Service {
             return false
         }
     }
-
-    async getPosts(userId) {
+    async getPosts(queries = [Query.equal('status', 'active')]) {
+        try {
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
+                queries,
+            )
+        } catch (error) {
+            console.log("Appwrite serive :: getPosts :: error", error);
+            return false
+        }
+    }
+    async getCurrentUserPosts(userId) {
         try {
             let queries = [Query.equal("userId", userId)]
             return await this.databases.listDocuments(
@@ -133,7 +144,6 @@ export class Service {
 
 
 const service = new Service()
-const userId = '65ad9c8d80072fa9f38c';
 
 
 export default service
