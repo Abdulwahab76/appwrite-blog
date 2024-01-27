@@ -8,16 +8,28 @@ function Home() {
 
 
     const [posts, setPosts] = useState([])
-    const authStatus = useSelector(state => state.auth)
-    useEffect(() => {
-        appwriteService.getPosts().then((posts) => {
-            if (posts) {
-                setPosts(posts.documents)
-            }
-        })
-    }, [])
+    const searchTerm = useSelector(state => state.search)
 
-    console.log(posts, 'posts===');
+    useEffect(() => {
+        if (!searchTerm) {
+            appwriteService.getPosts().then((allPosts) => {
+                if (allPosts) {
+                    setPosts(allPosts.documents);
+                }
+            });
+        } else {
+            setPosts((prev) =>
+                prev.filter((item) =>
+                    item.title.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+            );
+        }
+    }, [searchTerm]);
+
+
+
+
+
 
     if (posts.length === 0) (
         <div className="w-full py-8 mt-4 text-center">
