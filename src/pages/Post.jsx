@@ -63,7 +63,6 @@ export default function Post() {
                 </div>
 
 
-                <h1>Comment section</h1>
                 <Comment postId={slug} />
             </Container>
         </div>

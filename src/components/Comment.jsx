@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Client, Databases, ID, Query } from "appwrite";
 import conf from '../conf/conf';
+import appwriteService from "../appwrite/config";
 
 const Comment = ({ postId }) => {
     const [comments, setComments] = useState([]);
@@ -16,45 +17,39 @@ const Comment = ({ postId }) => {
 
     useEffect(() => {
         const fetchComments = async () => {
-            const query = [Query.equal('postId', postId)]
-            try {
-                const response = await databases.listDocuments(
-                    conf.appwriteDatabaseId,
-                    conf.appwriteCommentCollectionId,
-                    query
-                );
-                setComments(response.documents);
-            } catch (error) {
-                console.error('Error fetching comments:', error);
-            }
+            appwriteService.getCommentsOnPost(postId).then(response => {
+                setComments(response.documents)
+            })
         };
         fetchComments();
     }, [postId]);
+
+
     const handleCommentSubmit = async (e) => {
         e.preventDefault();
-        try {
-            const response = await databases.createDocument(
-                conf.appwriteDatabaseId,
-                conf.appwriteCommentCollectionId,
-                ID.unique(), {
-                postId,
-                text: commentText,
-            });
-            setComments([...comments, response]);
-            setCommentText('');
-        } catch (error) {
-            console.error('Error submitting comment:', error);
+        if (commentText !== '') {
+            appwriteService.createCommentsOnPost(postId, commentText).then(response => {
+                setComments([...comments, response]);
+                setCommentText('');
+            })
         }
+
     };
+    const handleDeleteComment = async (commentId) => {
+        appwriteService.deleteCommentOnPost(commentId).then(
+            setComments(prev => prev.filter(item => item.$id !== commentId))
+        )
+    }
 
     return (
         <div>
-
-            {comments.map((comment) => (
-                <div key={comment.$id}>
+            <h1>Comment Section</h1>
+            {comments.length > 0 ? comments.map((comment) => (
+                <div style={{ display: 'flex', justifyContent: 'space-around', width: '40%', margin: '20px auto', alignItems: 'center' }} key={comment.$id}>
                     <p>{comment.text}</p>
+                    <button onClick={() => handleDeleteComment(comment.$id)}>Delete</button>
                 </div>
-            ))}
+            )) : <h1>Add Comments</h1>}
             <form onSubmit={handleCommentSubmit}>
                 <textarea
                     value={commentText}

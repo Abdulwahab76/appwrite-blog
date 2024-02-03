@@ -106,6 +106,50 @@ export class Service {
         }
     }
 
+
+    // comment section
+    async getCommentsOnPost(postId) {
+        let queries = [Query.equal("postId", postId)]
+        try {
+            const response = await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteCommentCollectionId,
+                queries
+            );
+            return response
+        } catch (error) {
+            console.error('Error fetching comments:', error);
+        }
+    };
+
+    async createCommentsOnPost(postId, text) {
+        try {
+            const response = await this.databases.createDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteCommentCollectionId,
+                ID.unique(), {
+                postId,
+                text: text,
+            });
+            return response
+        } catch (error) {
+            console.error('Error submitting comment:', error);
+        }
+
+    }
+    async deleteCommentOnPost(commentId) {
+        try {
+            await this.databases.deleteDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteCommentCollectionId,
+                commentId
+            )
+            return true
+        } catch (error) {
+            console.log("Appwrite serive :: comment Delete :: error", error);
+            return false
+        }
+    }
     // file upload service
 
     async uploadFile(file) {
