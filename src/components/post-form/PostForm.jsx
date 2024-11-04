@@ -11,6 +11,7 @@ export default function PostForm({ post }) {
             title: post?.title || "",
             slug: post?.$id || "",
             content: post?.content || "",
+            categories: post?.categories || "",
             status: post?.status || "active",
         },
     });
@@ -47,6 +48,8 @@ export default function PostForm({ post }) {
                 }
             }
         }
+        console.log(data,'data===');
+        
     };
 
     const slugTransform = useCallback((value) => {
@@ -107,12 +110,19 @@ export default function PostForm({ post }) {
                         />
                     </div>
                 )}
+                 <Select
+                    options={["Web development", "Digital Marketing",'Wordpress']}
+                    label="Categories"
+                    className="mb-4"
+                    {...register("categories", { required: true })}
+                />
                 <Select
                     options={["active", "inactive"]}
                     label="Status"
                     className="mb-4"
                     {...register("status", { required: true })}
                 />
+               
                 <Button type="submit" bgColor={post ? "bg-green-500" : undefined} className="w-full">
                     {post ? "Update" : "Submit"}
                 </Button>

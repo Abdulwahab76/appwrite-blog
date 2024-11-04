@@ -61,7 +61,9 @@ export default function Post() {
                 <div className="browser-css">
                     {parse(post.content)}
                 </div>
-
+                <div className="browser-css">
+                    {parse(post.categories)}
+                </div>
 
                 <Comment postId={slug} />
             </Container>
