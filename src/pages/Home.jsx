@@ -5,9 +5,13 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import parse from "html-react-parser";
 import ArrowIcons from "../assets/Arrow";
-function Home() {
+import PaginatedList from "../components/PaginatedList";
+import Pagination from "../components/PaginatedList";
+ function Home() {
   const [posts, setPosts] = useState([]);
   const searchTerm = useSelector((state) => state.search);
+ 
+
 
   function formatDateWithDayName(timestamp) {
     const date = new Date(timestamp);
@@ -132,6 +136,9 @@ function Home() {
               </div>
             ))}
           </div>
+          <div>
+           
+        </div>
         </Container>
       </div>
 
@@ -172,9 +179,33 @@ function Home() {
           </div>
         </Container>
       </div>
-      
-    </div>
+      <PaginatedItems items={posts} itemsPerPage={3} />
+
+     </div>
   );
 }
 
 export default Home;
+
+
+const PaginatedItems = ({ items, itemsPerPage }) => {
+    const [currentPage, setCurrentPage] = useState(1);
+
+    // Calculate current items to display based on the current page
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
+
+    return (
+        <div>
+            
+
+            {/* Pagination Component */}
+            <Pagination
+                totalItems={items.length}
+                itemsPerPage={itemsPerPage}
+                onPageChange={setCurrentPage}
+            />
+        </div>
+    );
+};
