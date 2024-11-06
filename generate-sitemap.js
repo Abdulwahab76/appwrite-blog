@@ -13,13 +13,13 @@ const routes = [
   { url: '/about', changefreq: 'monthly', priority: 0.7 },
   { url: '/contact', changefreq: 'monthly', priority: 0.7 },
   { url: '/blog', changefreq: 'daily', priority: 0.8 },
-  { url: '/blog/post-1', changefreq: 'weekly', priority: 0.6 },
-  { url: '/blog/post-2', changefreq: 'weekly', priority: 0.6 },
+  { url: '/post/post-1', changefreq: 'weekly', priority: 0.6 },
+  { url: '/post/post-2', changefreq: 'weekly', priority: 0.6 },
   // Add more static routes or dynamically generated routes here
 ];
 
 async function generateSitemap() {
-  const sitemapStream = new SitemapStream({ hostname: 'https://yourwebsite.com' });
+  const sitemapStream = new SitemapStream({ hostname: 'https://appwrite-blog-one-topaz.vercel.app' });
 
   // Write the sitemap to public/sitemap.xml
   const writeStream = createWriteStream(path.join(__dirname, 'public', 'sitemap.xml'));
