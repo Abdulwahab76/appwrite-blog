@@ -139,7 +139,6 @@ function Home() {
 
 export default Home;
 
- 
 const PaginatedItems = ({ items = [], itemsPerPage = 10 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -148,54 +147,67 @@ const PaginatedItems = ({ items = [], itemsPerPage = 10 }) => {
   const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
-      <div>
-          <div className="w-full py-8">
-              <Container>
-                  <p className="text-2xl font-semibold py-10">All blog posts</p>
-                  <div className="grid  grid-cols-12 ">
-                      {currentItems.length > 0 ? (
-                          currentItems.map((post) => (
-                              <div key={post.$id} className="col-span-12 sm:col-span-6 md:col-span-4    ">
-                                  <Link to={`/post/${post.$id}`}>
-                                      <div className="w-full flex-col rounded-xl p-4 flex">
-                                          <div className="w-full mb-4">
-                                              <img
-                                                  src={appwriteService.getFilePreview(post.featuredImage)}
-                                                  alt={post.title}
-                                                  className="rounded-xl h-80 object-cover "
-                                              />
-                                          </div>
-                                          <div className="w-full">
-                                              <h2 className="text-xl font-medium text-text-purple py-3">
-                                                  {formatDateWithDayName(post.$createdAt)}
-                                              </h2>
-                                              <h2 className="text-2xl font-medium">{post.title}</h2>
-                                              <h2 className="text-xl py-5 text-gray-500 pb-7">
-                                                  {parse(post.content.substring(0, 50))}
-                                              </h2>
-                                              <span className="bg-text-purple/10 p-1 rounded-xl text-text-purple font-medium px-2">
-                                                  {post.categories}
-                                              </span>
-                                          </div>
-                                      </div>
-                                  </Link>
-                              </div>
-                          ))
-                      ) : (
-                          <p className="text-gray-500">No posts available.</p>
-                      )}
-                  </div>
-              </Container>
+    <div>
+      <div className="w-full py-8">
+        <Container>
+          <p className="text-2xl font-semibold py-10">All blog posts</p>
+          <div className="grid  grid-cols-12 ">
+            {currentItems.length > 0 ? (
+              currentItems.map((post) => (
+                <div
+                  key={post.$id}
+                  className="col-span-12 sm:col-span-6 md:col-span-4    "
+                >
+                  <Link to={`/post/${post.$id}`}>
+                    <div className="w-full flex-col rounded-xl p-4 flex">
+                      <div className="w-full mb-4">
+                        <img
+                          src={appwriteService.getFilePreview(
+                            post.featuredImage
+                          )}
+                          alt={post.title}
+                          className="rounded-xl h-80 object-cover "
+                        />
+                      </div>
+                      <div className="w-full">
+                        <h2 className="text-xl font-medium text-text-purple py-3">
+                          {formatDateWithDayName(post.$createdAt)}
+                        </h2>
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-2xl  font-medium py-5 items-center w-8/12">
+                            {post.title}
+                          </h2>
+                          <Link to={`/post/${post.$id}`}>
+                            {/* <img src={ArrowIcon} className="h-4 w-4"/> */}
+                            <ArrowIcons />
+                          </Link>
+                        </div>
+                        <h2 className="text-xl py-5 text-gray-500 pb-7">
+                          {parse(post.content.substring(0, 50))}
+                        </h2>
+                        <span className="bg-text-purple/10 p-1 rounded-xl text-text-purple font-medium px-2">
+                          {post.categories}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500">No posts available.</p>
+            )}
           </div>
-
-          {/* Show Pagination only if there are items */}
-          {items.length > itemsPerPage && (
-              <Pagination
-                  totalItems={items.length}
-                  itemsPerPage={itemsPerPage}
-                  onPageChange={setCurrentPage}
-              />
-          )}
+        </Container>
       </div>
+
+      {/* Show Pagination only if there are items */}
+      {items.length > itemsPerPage && (
+        <Pagination
+          totalItems={items.length}
+          itemsPerPage={itemsPerPage}
+          onPageChange={setCurrentPage}
+        />
+      )}
+    </div>
   );
 };
