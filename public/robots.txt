@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://appwrite-blog-one-topaz.vercel.app/sitemap.xml
