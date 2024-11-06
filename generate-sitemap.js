@@ -13,7 +13,7 @@ const routes = [
   { url: '/about', changefreq: 'monthly', priority: 0.7 },
   { url: '/contact', changefreq: 'monthly', priority: 0.7 },
   { url: '/blog', changefreq: 'daily', priority: 0.8 },
-  { url: '/post/post-1', changefreq: 'weekly', priority: 0.6 },
+  { url: '/post/this-is-category', changefreq: 'weekly', priority: 0.6 },
   { url: '/post/post-2', changefreq: 'weekly', priority: 0.6 },
   // Add more static routes or dynamically generated routes here
 ];
