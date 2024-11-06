@@ -1,32 +1,25 @@
 import React, { useEffect, useState } from "react";
 import appwriteService from "../appwrite/config";
-import { Container, PostCard } from "../components";
+import { Container } from "../components";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import parse from "html-react-parser";
 import ArrowIcons from "../assets/Arrow";
-import PaginatedList from "../components/PaginatedList";
 import Pagination from "../components/PaginatedList";
- function Home() {
+import { formatDateWithDayName } from "../utils/formateDate";
+function Home() {
   const [posts, setPosts] = useState([]);
   const searchTerm = useSelector((state) => state.search);
- 
-
 
   function formatDateWithDayName(timestamp) {
     const date = new Date(timestamp);
-
-    // Get day name using Intl.DateTimeFormat
     const dayName = new Intl.DateTimeFormat("en-US", {
       weekday: "long",
     }).format(date);
 
-    // Extract year, month, and day
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
-
-    // Return formatted date as Day, YYYY-MM-DD
     return `${dayName}, ${year}-${month}-${day}`;
   }
 
@@ -103,7 +96,6 @@ import Pagination from "../components/PaginatedList";
         </div>
       </Container>
 
-
       <div className="w-full py-8">
         <Container>
           <div className="flex flex-wrap">
@@ -136,76 +128,74 @@ import Pagination from "../components/PaginatedList";
               </div>
             ))}
           </div>
-          <div>
-           
-        </div>
+          <div></div>
         </Container>
       </div>
 
-
-
-      <div className="w-full py-8">
-        <Container>
-        <p className="text-2xl font-semibold py-10">All blog posts</p>
-          <div className="flex flex-wrap">
-            {posts.map((post) => (
-              <div key={post.$id} className="p-2 w-full md:w-6/12">
-                <Link to={`/post/${post.$id}`}>
-                  <div className="w-full flex-col  rounded-xl p-4 flex">
-                    <div className="w-full    mb-4">
-                      <img
-                        src={appwriteService.getFilePreview(post.featuredImage)}
-                        alt={post.title}
-                        className="rounded-xl h-80 object-contain w-11/12"
-                      />
-                    </div>
-                    <div className="w-full  ">
-                      <h2 className="text-xl font-medium text-text-purple py-3">
-                        {formatDateWithDayName(post.$createdAt)}
-                      </h2>
-
-                      <h2 className="text-2xl font-medium">{post.title}</h2>
-                      <h2 className="text-xl   py-5 text-gray-500 pb-7">
-                        {parse(post.content.substring(0, 50))}
-                      </h2>
-                      <span className="bg-text-purple/10 p-1 rounded-xl  text-text-purple font-medium px-2">
-                        {post.categories}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-            ))}
-          </div>
-        </Container>
-      </div>
-      <PaginatedItems items={posts} itemsPerPage={3} />
-
-     </div>
+      <PaginatedItems items={posts} itemsPerPage={5} />
+    </div>
   );
 }
 
 export default Home;
 
+ 
+const PaginatedItems = ({ items = [], itemsPerPage = 10 }) => {
+  const [currentPage, setCurrentPage] = useState(1);
 
-const PaginatedItems = ({ items, itemsPerPage }) => {
-    const [currentPage, setCurrentPage] = useState(1);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
 
-    // Calculate current items to display based on the current page
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
+  return (
+      <div>
+          <div className="w-full py-8">
+              <Container>
+                  <p className="text-2xl font-semibold py-10">All blog posts</p>
+                  <div className="grid  grid-cols-12 ">
+                      {currentItems.length > 0 ? (
+                          currentItems.map((post) => (
+                              <div key={post.$id} className="col-span-12 sm:col-span-6 md:col-span-4    ">
+                                  <Link to={`/post/${post.$id}`}>
+                                      <div className="w-full flex-col rounded-xl p-4 flex">
+                                          <div className="w-full mb-4">
+                                              <img
+                                                  src={appwriteService.getFilePreview(post.featuredImage)}
+                                                  alt={post.title}
+                                                  className="rounded-xl h-80 object-cover "
+                                              />
+                                          </div>
+                                          <div className="w-full">
+                                              <h2 className="text-xl font-medium text-text-purple py-3">
+                                                  {formatDateWithDayName(post.$createdAt)}
+                                              </h2>
+                                              <h2 className="text-2xl font-medium">{post.title}</h2>
+                                              <h2 className="text-xl py-5 text-gray-500 pb-7">
+                                                  {parse(post.content.substring(0, 50))}
+                                              </h2>
+                                              <span className="bg-text-purple/10 p-1 rounded-xl text-text-purple font-medium px-2">
+                                                  {post.categories}
+                                              </span>
+                                          </div>
+                                      </div>
+                                  </Link>
+                              </div>
+                          ))
+                      ) : (
+                          <p className="text-gray-500">No posts available.</p>
+                      )}
+                  </div>
+              </Container>
+          </div>
 
-    return (
-        <div>
-            
-
-            {/* Pagination Component */}
-            <Pagination
-                totalItems={items.length}
-                itemsPerPage={itemsPerPage}
-                onPageChange={setCurrentPage}
-            />
-        </div>
-    );
+          {/* Show Pagination only if there are items */}
+          {items.length > itemsPerPage && (
+              <Pagination
+                  totalItems={items.length}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={setCurrentPage}
+              />
+          )}
+      </div>
+  );
 };
