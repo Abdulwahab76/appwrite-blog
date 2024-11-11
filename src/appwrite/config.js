@@ -117,13 +117,16 @@ export class Service {
                 conf.appwriteCommentCollectionId,
                 queries
             );
-            return response
+           
+          
+              return response
+     
         } catch (error) {
             console.error('Error fetching comments:', error);
         }
     };
 
-    async createCommentsOnPost(postId, text) {
+    async createCommentsOnPost(postId, text,userId) {
         try {
             const response = await this.databases.createDocument(
                 conf.appwriteDatabaseId,
@@ -131,8 +134,11 @@ export class Service {
                 ID.unique(), {
                 postId,
                 text: text,
+                userId,
             });
-            return response
+            const { $databaseId, $collectionId, $permissions, ...safeResponse } = response;
+            return safeResponse; 
+            
         } catch (error) {
             console.error('Error submitting comment:', error);
         }
