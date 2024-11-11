@@ -13,7 +13,7 @@ const staticRoutes = [
   { url: '/', changefreq: 'daily', priority: 1.0 },
   { url: '/about', changefreq: 'monthly', priority: 0.7 },
   { url: '/contact', changefreq: 'monthly', priority: 0.7 },
-  { url: '/blog', changefreq: 'daily', priority: 0.8 }
+  { url: '/post', changefreq: 'daily', priority: 0.8 }
 ];
 
 // Fetch dynamic blog post routes from Appwrite
