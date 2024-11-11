@@ -1,4 +1,4 @@
 User-agent: *
-Disallow:
+Allow: /
 
 Sitemap: https://appwrite-blog-one-topaz.vercel.app/sitemap.xml
