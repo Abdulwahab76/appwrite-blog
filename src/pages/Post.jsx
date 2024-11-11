@@ -36,8 +36,7 @@ export default function Post() {
 
   if (!post) return null;
 
-  // Structured data (JSON-LD) for SEO
-  const structuredData = {
+   const structuredData = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     "headline": post.title, // Title of the post
@@ -80,7 +79,7 @@ export default function Post() {
           <h2 className="text-xl font-medium text-text-purple py-3">
             {formatDateWithDayName(post.$createdAt)}
           </h2>
-          <div className="relative flex items-center justify-around">
+          <div className="relative flex items-center justify-between">
             <h1 className="text-4xl font-bold">{post.title}</h1>
 
             {isAuthor && (
