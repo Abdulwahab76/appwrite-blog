@@ -1,37 +1,39 @@
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import authService from "../appwrite/auth"; // Import the AuthService
-
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import authService from '../appwrite/auth';
+ 
 const VerifyEmail = () => {
-  const [message, setMessage] = useState("Verifying your email...");
   const location = useLocation();
-  const navigate = useNavigate();
+  const [status, setStatus] = useState(null);
+ 
 
   useEffect(() => {
-    // Extract `secret` from the query params in the URL
-    const queryParams = new URLSearchParams(location.search);
-    const secret = queryParams.get("secret");
-
-    if (secret) {
-      // Verify email using the secret
-      verifyEmail(secret);
+    const searchParams = new URLSearchParams(location.search);
+    const userId = searchParams.get('userId');
+    const secret = searchParams.get('secret');
+    console.log(secret);
+    
+    if (userId && secret) {
+      authService.verifyEmail(userId, secret)
+        .then(response => {
+          setStatus('Your email has been successfully verified!');
+          console.log('Email verified successfully:', response);
+        
+        })
+        .catch(error => {
+          setStatus('There was an error verifying your email.');
+         
+        });
     } else {
-      setMessage("Invalid verification link.");
+      setStatus('Invalid verification link.');
     }
   }, [location.search]);
 
-  const verifyEmail = async (secret) => {
-    try {
-      await authService.verifyEmail(secret);
-      setMessage("Email verified successfully! You can now log in.");
-      navigate("/login"); // Redirect to login page after successful verification
-    } catch (error) {
-      console.error("Verification failed:", error);
-      setMessage("Verification failed. Please try again.");
-    }
-  };
-
-  return <div>{message}</div>;
+  return (
+    <div className="verification-page">
+      <h1>{status || 'Verifying Your Email...'}</h1>
+    </div>
+  );
 };
 
 export default VerifyEmail;

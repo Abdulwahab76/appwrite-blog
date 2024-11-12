@@ -25,7 +25,7 @@ export class AuthService {
       if (userAccount) {
         console.log("Account created successfully:", userAccount);
 
-          // Start the session automatically
+          
           await this.account.createEmailSession(email, password);
 
           // Send verification email
@@ -71,9 +71,9 @@ export class AuthService {
   }
 
   // Verify email using secret from the URL
-  async verifyEmail(secret) {
+  async verifyEmail(userId,secret) {
     try {
-      const response = await this.account.updateVerification(secret);
+      const response = await this.account.updateVerification(userId,secret);
       console.log("Email verified successfully:", response);
       return response;
     } catch (error) {
