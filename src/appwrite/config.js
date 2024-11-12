@@ -1,200 +1,200 @@
-import conf from '../conf/conf.js';
+import conf from "../conf/conf.js";
 import { Client, ID, Databases, Storage, Query } from "appwrite";
 
 export class Service {
-    client = new Client();
-    databases;
-    bucket;
+  client = new Client();
+  databases;
+  bucket;
 
-    constructor() {
-        this.client
-            .setEndpoint(conf.appwriteUrl)
-            .setProject(conf.appwriteProjectId);
-        this.databases = new Databases(this.client);
-        this.bucket = new Storage(this.client);
-    }
+  constructor() {
+    this.client
+      .setEndpoint(conf.appwriteUrl)
+      .setProject(conf.appwriteProjectId);
+    this.databases = new Databases(this.client);
+    this.bucket = new Storage(this.client);
+  }
 
-    async createPost({ title, slug, content, featuredImage, status, userId,categories }) {
-        try {
-            return await this.databases.createDocument(
-                conf.appwriteDatabaseId,
-                conf.appwriteCollectionId,
-                slug,
-                {
-                    title,
-                    content,
-                    featuredImage,
-                    status,
-                    userId,
-                    categories
-                }
-            )
-        } catch (error) {
-            console.log("Appwrite serive :: createPost :: error", error);
+  async createPost({
+    title,
+    slug,
+    content,
+    featuredImage,
+    status,
+    userId,
+    categories,
+  }) {
+    try {
+      return await this.databases.createDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionId,
+        slug,
+        {
+          title,
+          content,
+          featuredImage,
+          status,
+          userId,
+          categories,
         }
+      );
+    } catch (error) {
+      console.log("Appwrite serive :: createPost :: error", error);
     }
+  }
 
-    async updatePost(slug, { title, content, featuredImage, status }) {
-        try {
-            return await this.databases.updateDocument(
-                conf.appwriteDatabaseId,
-                conf.appwriteCollectionId,
-                slug,
-                {
-                    title,
-                    content,
-                    featuredImage,
-                    status,
-
-                }
-            )
-        } catch (error) {
-            console.log("Appwrite serive :: updatePost :: error", error);
+  async updatePost(slug, { title, content, featuredImage, status }) {
+    try {
+      return await this.databases.updateDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionId,
+        slug,
+        {
+          title,
+          content,
+          featuredImage,
+          status,
         }
+      );
+    } catch (error) {
+      console.log("Appwrite serive :: updatePost :: error", error);
     }
+  }
 
-    async deletePost(slug) {
-        try {
-            await this.databases.deleteDocument(
-                conf.appwriteDatabaseId,
-                conf.appwriteCollectionId,
-                slug
+  async deletePost(slug) {
+    try {
+      await this.databases.deleteDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionId,
+        slug
+      );
+      return true;
+    } catch (error) {
+      console.log("Appwrite serive :: deletePost :: error", error);
+      return false;
+    }
+  }
 
-            )
-            return true
-        } catch (error) {
-            console.log("Appwrite serive :: deletePost :: error", error);
-            return false
+  async getPost(slug) {
+    try {
+      return await this.databases.getDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionId,
+        slug
+      );
+    } catch (error) {
+      console.log("Appwrite serive :: getPost :: error", error);
+      return false;
+    }
+  }
+  async getPosts(queries = [Query.equal("status", "active")]) {
+    try {
+      return await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionId,
+        queries
+      );
+    } catch (error) {
+      console.log("Appwrite serive :: getPosts :: error", error);
+      return false;
+    }
+  }
+  async getCurrentUserPosts(userId) {
+    try {
+      let queries = [Query.equal("userId", userId)];
+      return await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionId,
+        queries
+      );
+    } catch (error) {
+      console.log("Appwrite serive :: getPosts :: error", error);
+      return false;
+    }
+  }
+
+  // comment section
+  async getCommentsOnPost(postId) {
+    let queries = [Query.equal("postId", postId)];
+    try {
+      const response = await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteCommentCollectionId,
+        queries
+      );
+      return response;
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  }
+
+  async createCommentsOnPost(postId, text, userId, userName) {
+    try {
+      const response = await this.databases.createDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCommentCollectionId,
+        ID.unique(),
+        {
+          postId,
+          text: text,
+          userId,
+          userName,
         }
+      );
+      const {
+        $databaseId,
+        $collectionId,
+        $permissions,
+      
+        ...safeResponse
+      } = response;
+      return safeResponse;
+    } catch (error) {
+      console.error("Error submitting comment:", error);
     }
-
-    async getPost(slug) {
-        try {
-            return await this.databases.getDocument(
-                conf.appwriteDatabaseId,
-                conf.appwriteCollectionId,
-                slug
-
-            )
-        } catch (error) {
-            console.log("Appwrite serive :: getPost :: error", error);
-            return false
-        }
+  }
+  async deleteCommentOnPost(commentId) {
+    try {
+      await this.databases.deleteDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCommentCollectionId,
+        commentId
+      );
+      return true;
+    } catch (error) {
+      console.log("Appwrite serive :: comment Delete :: error", error);
+      return false;
     }
-    async getPosts(queries = [Query.equal('status', 'active')]) {
-        try {
-            return await this.databases.listDocuments(
-                conf.appwriteDatabaseId,
-                conf.appwriteCollectionId,
-                queries,
-            )
-        } catch (error) {
-            console.log("Appwrite serive :: getPosts :: error", error);
-            return false
-        }
-    }
-    async getCurrentUserPosts(userId) {
-        try {
-            let queries = [Query.equal("userId", userId)]
-            return await this.databases.listDocuments(
-                conf.appwriteDatabaseId,
-                conf.appwriteCollectionId,
-                queries,
-            )
-        } catch (error) {
-            console.log("Appwrite serive :: getPosts :: error", error);
-            return false
-        }
-    }
+  }
+  // file upload service
 
-
-    // comment section
-    async getCommentsOnPost(postId) {
-        let queries = [Query.equal("postId", postId)]
-        try {
-            const response = await this.databases.listDocuments(
-                conf.appwriteDatabaseId,
-                conf.appwriteCommentCollectionId,
-                queries
-            );
-           
-          
-              return response
-     
-        } catch (error) {
-            console.error('Error fetching comments:', error);
-        }
-    };
-
-    async createCommentsOnPost(postId, text,userId) {
-        try {
-            const response = await this.databases.createDocument(
-                conf.appwriteDatabaseId,
-                conf.appwriteCommentCollectionId,
-                ID.unique(), {
-                postId,
-                text: text,
-                userId,
-            });
-            const { $databaseId, $collectionId, $permissions, ...safeResponse } = response;
-            return safeResponse; 
-            
-        } catch (error) {
-            console.error('Error submitting comment:', error);
-        }
-
+  async uploadFile(file) {
+    try {
+      return await this.bucket.createFile(
+        conf.appwriteBucketId,
+        ID.unique(),
+        file
+      );
+    } catch (error) {
+      console.log("Appwrite serive :: uploadFile :: error", error);
+      return false;
     }
-    async deleteCommentOnPost(commentId) {
-        try {
-            await this.databases.deleteDocument(
-                conf.appwriteDatabaseId,
-                conf.appwriteCommentCollectionId,
-                commentId
-            )
-            return true
-        } catch (error) {
-            console.log("Appwrite serive :: comment Delete :: error", error);
-            return false
-        }
-    }
-    // file upload service
+  }
 
-    async uploadFile(file) {
-        try {
-            return await this.bucket.createFile(
-                conf.appwriteBucketId,
-                ID.unique(),
-                file
-            )
-        } catch (error) {
-            console.log("Appwrite serive :: uploadFile :: error", error);
-            return false
-        }
+  async deleteFile(fileId) {
+    try {
+      await this.bucket.deleteFile(conf.appwriteBucketId, fileId);
+      return true;
+    } catch (error) {
+      console.log("Appwrite serive :: deleteFile :: error", error);
+      return false;
     }
+  }
 
-    async deleteFile(fileId) {
-        try {
-            await this.bucket.deleteFile(
-                conf.appwriteBucketId,
-                fileId
-            )
-            return true
-        } catch (error) {
-            console.log("Appwrite serive :: deleteFile :: error", error);
-            return false
-        }
-    }
-
-    getFilePreview(fileId) {
-        return this.bucket.getFilePreview(
-            conf.appwriteBucketId,
-            fileId
-        )
-    }
+  getFilePreview(fileId) {
+    return this.bucket.getFilePreview(conf.appwriteBucketId, fileId);
+  }
 }
 
+const service = new Service();
 
-const service = new Service()
-
-
-export default service
+export default service;

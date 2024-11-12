@@ -1,5 +1,5 @@
-import conf from "../conf/conf.js";
 import { Client, Account, ID } from "appwrite";
+import conf from "../conf/conf.js";
 
 export class AuthService {
   client = new Client();
@@ -7,11 +7,12 @@ export class AuthService {
 
   constructor() {
     this.client
-      .setEndpoint(conf.appwriteUrl)
-      .setProject(conf.appwriteProjectId);
+      .setEndpoint(conf.appwriteUrl) 
+      .setProject(conf.appwriteProjectId); 
     this.account = new Account(this.client);
   }
 
+  // Create a new user account and send verification email
   async createAccount({ email, password, name }) {
     try {
       const userAccount = await this.account.create(
@@ -20,38 +21,34 @@ export class AuthService {
         password,
         name
       );
+
       if (userAccount) {
-        console.log(userAccount, "userAccount");
+        console.log("Account created successfully:", userAccount);
 
-        await this.sendVerificationEmail();
+          // Start the session automatically
+          await this.account.createEmailSession(email, password);
 
-        return this.login({ email, password });
+          // Send verification email
+          await this.account.createVerification(conf.appwriteBaseUrl + '/verify');
+  
+
+        return userAccount; 
       } else {
-        return userAccount;
+        throw new Error("Account creation failed.");
       }
     } catch (error) {
+      console.error("Error creating account:", error);
       throw error;
     }
   }
 
-  async sendVerificationEmail() {
-    try {
-      const response = await this.account.createVerification(
-        "https://appwrite-blog-one-topaz.vercel.app"
-      );
-      console.log(response, "Verification email sent");
-      return response;
-    } catch (error) {
-      console.error("Error sending verification email:", error);
-      throw error;
-    }
-  }
-
+ 
   async login({ email, password }) {
     try {
       return await this.account.createEmailSession(email, password);
     } catch (error) {
       console.log("Login error:", error);
+      throw error;
     }
   }
 
@@ -60,10 +57,11 @@ export class AuthService {
       return await this.account.get();
     } catch (error) {
       console.log("Error fetching current user:", error);
+      return null;
     }
-    return null;
   }
 
+  // Logout user
   async logout() {
     try {
       await this.account.deleteSessions();
@@ -71,13 +69,15 @@ export class AuthService {
       console.log("Error during logout:", error);
     }
   }
-  async verifyEmail(userId, secret) {
+
+  // Verify email using secret from the URL
+  async verifyEmail(secret) {
     try {
-      const response = await this.account.updateVerification(userId, secret);
-      console.log("Verification confirmed:", response);
+      const response = await this.account.updateVerification(secret);
+      console.log("Email verified successfully:", response);
       return response;
     } catch (error) {
-      console.error("Verification failed:", error);
+      console.error("Error verifying email:", error);
       throw error;
     }
   }

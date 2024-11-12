@@ -12,24 +12,26 @@ function Signup() {
     const [error, setError] = useState("")
     const dispatch = useDispatch()
     const { register, handleSubmit } = useForm()
-    const client = new Client();
-
-    const account = new Account(client);
+ 
     const create = async (data) => {
-        setError("")
-
+        setError("");
         try {
-            const userData = await authService.createAccount(data)
-            if (userData) {
-                const userData = await authService.getCurrentUser()
-                if (userData) dispatch(login(userData));
-                navigate("/")
-            }
+          const userData = await authService.createAccount(data);
+          
+           
+          if (userData) {
+            alert("Account created! Please check your email to verify your account.");
+            
+            // Optional: Redirect to login page
+            navigate("/login"); 
+          }
         } catch (error) {
-            setError(error.message)
+          console.error("Signup error:", error);
+          setError(error.message);
         }
-
-    }
+      };
+      
+      
 
     return (
         <div className="flex items-center justify-center">

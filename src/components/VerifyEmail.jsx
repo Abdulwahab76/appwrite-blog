@@ -1,31 +1,37 @@
-// VerifyEmail.js
-import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import authService from '../appwrite/auth';
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import authService from "../appwrite/auth"; // Import the AuthService
 
-export default function VerifyEmail() {
-    const [status, setStatus] = useState('Verifying...');
-    const location = useLocation();
+const VerifyEmail = () => {
+  const [message, setMessage] = useState("Verifying your email...");
+  const location = useLocation();
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const userId = params.get('userId');
-        const secret = params.get('secret');
+  useEffect(() => {
+    // Extract `secret` from the query params in the URL
+    const queryParams = new URLSearchParams(location.search);
+    const secret = queryParams.get("secret");
 
-        if (userId && secret) {
-            authService.verifyEmail(userId, secret)
-                .then(() => setStatus('Email verified successfully!'))
-                .catch(() => setStatus('Email verification failed. Please try again.'));
-        } else {
-            setStatus('Invalid verification link.');
-        }
-    }, [location.search]);
+    if (secret) {
+      // Verify email using the secret
+      verifyEmail(secret);
+    } else {
+      setMessage("Invalid verification link.");
+    }
+  }, [location.search]);
 
-    return (
-        <div className="flex justify-center items-center min-h-screen">
-            <div className="p-6 bg-white rounded shadow-md">
-                <h2 className="text-xl font-bold">{status}</h2>
-            </div>
-        </div>
-    );
-}
+  const verifyEmail = async (secret) => {
+    try {
+      await authService.verifyEmail(secret);
+      setMessage("Email verified successfully! You can now log in.");
+      navigate("/login"); // Redirect to login page after successful verification
+    } catch (error) {
+      console.error("Verification failed:", error);
+      setMessage("Verification failed. Please try again.");
+    }
+  };
+
+  return <div>{message}</div>;
+};
+
+export default VerifyEmail;
