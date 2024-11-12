@@ -26,13 +26,14 @@ const Comment = ({ postId }) => {
     e.preventDefault();
     if (commentText !== "") {
       appwriteService
-        .createCommentsOnPost(postId, commentText, userData.$id)
+        .createCommentsOnPost(postId, commentText, userData.$id,userData.name)
         .then((response) => {
           setComments([...comments, response]);
           setCommentText("");
         });
     }
   };
+
   const handleDeleteComment = async (commentId) => {
     appwriteService
       .deleteCommentOnPost(commentId)
@@ -40,9 +41,7 @@ const Comment = ({ postId }) => {
         setComments((prev) => prev.filter((item) => item.$id !== commentId))
       );
   };
-
-  console.log(comments);
-
+ 
   return (
     <div className="flex pt-10 flex-col gap-y-5">
       <h1 className="font-medium text-2xl">Reply to post</h1>
@@ -56,7 +55,7 @@ const Comment = ({ postId }) => {
                 className="w-10 h-10"
                 alt=""
               />
-              <p>{userData.name}</p>
+              <p>{comment.userName}</p>
             </div>
 
             <div className="flex  w-3/6 justify-between  border-b-[2px] py-3">
