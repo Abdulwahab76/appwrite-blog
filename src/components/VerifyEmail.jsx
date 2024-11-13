@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import authService from '../appwrite/auth';
  
 const VerifyEmail = () => {
@@ -21,7 +21,7 @@ const VerifyEmail = () => {
         
         })
         .catch(error => {
-          setStatus('There was an error verifying your email.');
+          setStatus('There was an error verifying your email.',error);
          
         });
     } else {
@@ -30,8 +30,9 @@ const VerifyEmail = () => {
   }, [location.search]);
 
   return (
-    <div className="verification-page">
-      <h1>{status || 'Verifying Your Email...'}</h1>
+    <div className="verification-page py-20 flex justify-center flex-col items-center gap-y-3">
+      <h1 className='font-medium text-center '>{status || 'Verifying Your Email...'}</h1>
+    <Link to='/login'> <button className='bg-text-purple/30 p-3 py-2 rounded-md'>Go back</button></Link>
     </div>
   );
 };
