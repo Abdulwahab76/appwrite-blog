@@ -13,6 +13,7 @@ import PostCard from "./PostCard";
 import AuthLayout from "./AuthLayout";
 import Input from "./Input";
 import VerifyEmail from "./VerifyEmail";
+import Preloader from "./Preloader";
 
 export {
   Header,
@@ -30,4 +31,5 @@ export {
   Input,
   Select,
   VerifyEmail,
+  Preloader,
 };
