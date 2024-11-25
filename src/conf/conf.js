@@ -11,7 +11,7 @@ if (isNode) {
 // Configuration object
 const conf = {
   appwriteUrl: isNode ? process.env.VITE_APPWRITE_URL : import.meta.env.VITE_APPWRITE_URL,
-  appwriteBaseUrl: isNode ? 'https://appwrite-blog-one-topaz.vercel.app' : import.meta.env.VITE_APPWRITE_BASE_URL,
+  appwriteBaseUrl: isNode ? process.env.VITE_APPWRITE_BASE_URL : import.meta.env.VITE_APPWRITE_BASE_URL,
   appwriteProjectId: isNode ? process.env.VITE_APPWRITE_PROJECT_ID : import.meta.env.VITE_APPWRITE_PROJECT_ID,
   appwriteDatabaseId: isNode ? process.env.VITE_APPWRITE_DATABASE_ID : import.meta.env.VITE_APPWRITE_DATABASE_ID,
   appwriteCollectionId: isNode ? process.env.VITE_APPWRITE_COLLECTION_ID : import.meta.env.VITE_APPWRITE_COLLECTION_ID,

@@ -83,7 +83,7 @@ export class AuthService {
     try {
       const response = await this.account.createRecovery(
         email,
-        `${conf.appwriteBaseUrl}/reset-password`
+        `https://appwrite-blog-one-topaz.vercel.app/reset-password`
       );
       console.log("Password recovery email sent:", response);
       return response;
