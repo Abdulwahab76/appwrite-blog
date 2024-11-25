@@ -79,6 +79,7 @@ function Login() {
                                 required: true,
                             })}
                         />
+                        <Link  to='/reset-password'><p className='text-sm pt-3'>Forget password?</p> </Link>
                         <Button
                             loading={loading}
                             type="submit"

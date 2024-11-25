@@ -7,8 +7,8 @@ export class AuthService {
 
   constructor() {
     this.client
-      .setEndpoint(conf.appwriteUrl) 
-      .setProject(conf.appwriteProjectId); 
+      .setEndpoint(conf.appwriteUrl)
+      .setProject(conf.appwriteProjectId);
     this.account = new Account(this.client);
   }
 
@@ -25,14 +25,12 @@ export class AuthService {
       if (userAccount) {
         console.log("Account created successfully:", userAccount);
 
-          
-          await this.account.createEmailSession(email, password);
+        await this.account.createEmailSession(email, password);
 
-          // Send verification email
-          await this.account.createVerification(conf.appwriteBaseUrl + '/verify');
-  
+        // Send verification email
+        await this.account.createVerification(conf.appwriteBaseUrl + "/verify");
 
-        return userAccount; 
+        return userAccount;
       } else {
         throw new Error("Account creation failed.");
       }
@@ -42,7 +40,6 @@ export class AuthService {
     }
   }
 
- 
   async login({ email, password }) {
     try {
       return await this.account.createEmailSession(email, password);
@@ -71,14 +68,44 @@ export class AuthService {
   }
 
   // Verify email using secret from the URL
-  async verifyEmail(userId,secret) {
+  async verifyEmail(userId, secret) {
     try {
-      const response = await this.account.updateVerification(userId,secret);
+      const response = await this.account.updateVerification(userId, secret);
       console.log("Email verified successfully:", response);
       return response;
     } catch (error) {
       console.error("Error verifying email:", error);
       throw error;
+    }
+  }
+
+  async requestPasswordRecovery(email) {
+    try {
+      const response = await this.account.createRecovery(
+        email,
+        `${conf.appwriteBaseUrl}/reset-password`
+      );
+      console.log("Password recovery email sent:", response);
+      return response;
+    } catch (error) {
+      console.error("Error requesting password recovery:", error);
+      throw new Error(error.message || "Password recovery request failed.");
+    }
+  }
+
+  async resetPassword(userId, secret, newPassword) {
+    try {
+      const response = await this.account.updateRecovery(
+        userId,
+        secret,
+        newPassword,
+        newPassword
+      );
+      console.log("Password reset successful:", response);
+      return response;
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      throw new Error(error.message || "Password reset failed.");
     }
   }
 }
